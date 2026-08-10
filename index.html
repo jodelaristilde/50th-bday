@@ -835,8 +835,9 @@
     </div>
 
     <div class="admin-lock" id="rsvp-list-lock">
-      <p style="margin-bottom:14px;">Unlock the site editor first to view responses.</p>
-      <a href="#admin" class="cta-gold" style="display:inline-block;">Go to Host Login →</a>
+      <input type="password" id="rsvp-list-password" placeholder="Enter host password" autocomplete="off">
+      <button type="button" class="cta-gold" onclick="checkRsvpListPassword()">Unlock</button>
+      <div class="admin-error" id="rsvp-list-error"></div>
     </div>
 
     <div class="admin-panel" id="rsvp-list-panel">
@@ -1066,6 +1067,10 @@
     clone.querySelectorAll('.admin-section').forEach(el => el.classList.remove('reveal'));
     const clonedPwInput = clone.querySelector('#admin-password');
     if(clonedPwInput) clonedPwInput.setAttribute('value', '');
+    const clonedRsvpPwInput = clone.querySelector('#rsvp-list-password');
+    if(clonedRsvpPwInput) clonedRsvpPwInput.setAttribute('value', '');
+    const clonedRsvpError = clone.querySelector('#rsvp-list-error');
+    if(clonedRsvpError) clonedRsvpError.textContent = '';
     clone.querySelectorAll('.editable').forEach(el => el.setAttribute('contenteditable', 'false'));
     clone.querySelectorAll('.gallery-tile .upload-btn').forEach(btn => {
       const parentTile = btn.closest('.gallery-tile');
@@ -1163,9 +1168,9 @@
     // authenticates -- guests never see the Edit Page button.
     document.getElementById('edit-controls').style.display = '';
   }
-  function checkAdminPassword(){
-    const input = document.getElementById('admin-password');
-    const error = document.getElementById('admin-error');
+  function checkPasswordField(inputId, errorId){
+    const input = document.getElementById(inputId);
+    const error = document.getElementById(errorId);
     if(input.value === RSVP_CONFIG.ADMIN_PASSWORD){
       error.textContent = '';
       unlockHostArea();
@@ -1173,12 +1178,22 @@
       error.textContent = 'Incorrect password.';
     }
   }
-  const adminPasswordInput = document.getElementById('admin-password');
-  if(adminPasswordInput){
-    adminPasswordInput.addEventListener('keydown', e => {
-      if(e.key === 'Enter') checkAdminPassword();
-    });
+  function checkAdminPassword(){
+    checkPasswordField('admin-password', 'admin-error');
   }
+  function checkRsvpListPassword(){
+    checkPasswordField('rsvp-list-password', 'rsvp-list-error');
+  }
+  ['admin-password', 'rsvp-list-password'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el){
+      el.addEventListener('keydown', e => {
+        if(e.key === 'Enter'){
+          id === 'admin-password' ? checkAdminPassword() : checkRsvpListPassword();
+        }
+      });
+    }
+  });
 
   // ---------- Keep the RSVP iframe sized correctly at all times ----------
   // Jotform's embedded forms send an official "setHeight:NNN" message any
