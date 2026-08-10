@@ -568,6 +568,11 @@
     background:#22c55e; border:none; border-radius:6px; padding:8px 14px; cursor:pointer;
   }
   .rsvp-export-btn:hover{background:#16a34a;}
+  .rsvp-save-btn{
+    font-family:'Jost',sans-serif; font-size:0.8rem; font-weight:600; color:#fff;
+    background:#111827; border:none; border-radius:6px; padding:8px 14px; cursor:pointer;
+  }
+  .rsvp-save-btn:hover{background:#000;}
   .rsvp-row-delete{
     width:26px; height:26px; border-radius:50%; border:1px solid #e5e7eb; background:#fff;
     color:#9ca3af; cursor:pointer; font-size:0.75rem; line-height:1;
@@ -837,8 +842,9 @@
     <div class="admin-panel" id="rsvp-list-panel">
       <div class="admin-toolbar">
         <div class="admin-count" id="admin-rsvp-count">6 RSVPs — 6 total guests</div>
-        <div style="display:flex; gap:16px; align-items:center;">
+        <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
           <button type="button" class="rsvp-export-btn" onclick="exportRsvpToExcel()">⤓ Export to Excel</button>
+          <button type="button" class="rsvp-save-btn" onclick="downloadPage()">⬇ Save Page (with deletions)</button>
           <a href="https://www.jotform.com/myforms" target="_blank" rel="noopener">Open in Jotform →</a>
         </div>
       </div>
