@@ -6,7 +6,7 @@
 <title>Keira's 50th — A Sex and the City Affair</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@500;700&family=Montserrat:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg1:#282050;
@@ -120,6 +120,18 @@
     font-family:'Jost',sans-serif;
   }
   .inline-size-ctrl button:hover{background:var(--gold); color:var(--bg1);}
+  .inline-color-ctrl{
+    width:26px; height:22px; padding:0; border:1px solid var(--gold);
+    border-radius:5px; background:none; cursor:pointer; vertical-align:middle;
+  }
+  .inline-color-ctrl::-webkit-color-swatch-wrapper{padding:2px;}
+  .inline-color-ctrl::-webkit-color-swatch{border:none; border-radius:3px;}
+  .inline-font-ctrl{
+    border:1px solid var(--gold); background:rgba(15,10,36,0.75); color:var(--gold-soft);
+    font-family:'Jost',sans-serif; font-size:0.6rem; letter-spacing:0.03em; text-transform:none;
+    border-radius:5px; padding:3px 6px; cursor:pointer; max-width:118px;
+  }
+  .inline-font-ctrl:hover{background:rgba(205,164,52,0.22);}
 
   /* ---------- PEONY DECOR ---------- */
   .peony-decor{
@@ -517,6 +529,29 @@
   table.rsvp-table tr:last-child td{border-bottom:none;}
   .admin-note{font-family:'Jost',sans-serif; font-size:0.75rem; color:var(--ink); opacity:0.7; margin-top:18px;}
 
+  .gh-publish-box{
+    margin-top:32px; padding-top:26px; border-top:1px solid var(--line);
+  }
+  .gh-publish-title{
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-size:1.4rem;
+    color:var(--peony); margin-bottom:8px;
+  }
+  .gh-field-label{
+    display:block; font-family:'Jost',sans-serif; font-size:0.68rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--gold-soft); margin:14px 0 6px;
+  }
+  .gh-field{
+    width:100%; max-width:420px; padding:10px 12px; border-radius:4px;
+    border:1px solid var(--line); background:rgba(255,255,255,0.04); color:var(--ink);
+    font-family:'Jost',sans-serif; font-size:0.85rem;
+  }
+  .gh-btn-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;}
+  .gh-status{
+    font-family:'Jost',sans-serif; font-size:0.8rem; margin-top:12px; min-height:1.2em;
+    color:var(--gold-soft);
+  }
+  .gh-status.is-error{color:#ff9d9d;}
+
   /* ---------- RSVP List page: Jotform-style green/white look ---------- */
   .rsvp-list-page{
     background:#eef1ef; min-height:100vh; padding:60px 5vw;
@@ -642,7 +677,7 @@
 </div>
 
 <nav>
-  <a href="#" class="brand editable" contenteditable="false">Keira</a>
+  <a href="#" class="brand editable" contenteditable="false">KeiraLiners</a>
   <ul>
     <li><a href="#about" class="editable" contenteditable="false">About</a></li>
     <li><a href="#schedule" class="editable" contenteditable="false">Schedule</a></li>
@@ -677,12 +712,12 @@
 
   <div class="hero-content">
     <div class="hero-eyebrow eyebrow editable" contenteditable="false">You're Invited</div>
-    <h1 class="editable" contenteditable="false">Keira</h1>
-    <div class="turns editable" contenteditable="false">Sex &amp; the City turns</div>
-    <div class="fifty editable" contenteditable="false">Fabulous Fifty</div>
+    <h1 class="editable" contenteditable="false">KeiraLiners</h1>
+    <div class="turns editable" contenteditable="false">Sex &amp; the City</div>
+    <div class="fifty editable" contenteditable="false">Fabulous 50th Birthday Party</div>
     <div class="sub editable" contenteditable="false">A cosmopolitan-soaked celebration, uptown glamour, downtown attitude.</div>
     <div class="divider"></div>
-    <div class="sub editable" contenteditable="false" style="opacity:.9; font-size:1.5rem;">September 19, 2026 · 6:00 PM</div>
+    <div class="sub editable" contenteditable="false" style="opacity:.9; font-size:1.5rem;">September 19, 2026 · 8:00 PM to 1:00 AM</div>
     <a href="#rsvp" class="cta-gold">RSVP Now</a>
   </div>
 </header>
@@ -692,12 +727,11 @@
   <div class="about-scrim"></div>
   <div class="section-head">
     <div class="eyebrow editable" contenteditable="false">The Story</div>
-    <h2 class="editable" contenteditable="false">Fifty, Fabulous, and Still Asking the Big Questions</h2>
+    <h2 class="editable" contenteditable="false">I have always believed a great story deserves a great party!</h2>
   </div>
   <div class="about-wrap">
-    <p class="editable" contenteditable="false">Five decades of chasing dreams, second cosmos, and better shoes. Keira has always believed a great story deserves a great party — so we're gathering everyone she loves for one unforgettable night in New York City, dressed in our finest and ready to toast to fifty years well lived.</p>
     <p class="editable" contenteditable="false">Channel your inner Carrie, Samantha, Charlotte, or Miranda. Cocktail attire, city glamour, and a signature cosmopolitan in hand — because a milestone like this deserves nothing less than the fabulous.</p>
-    <p class="signature-line editable" contenteditable="false">Here's to love, laughter, and happily ever after.</p>
+    <p class="signature-line editable" contenteditable="false">Here's to Love Living&amp; Laughter</p>
   </div>
 </section>
 </div>
@@ -709,27 +743,27 @@
   </div>
   <div class="timeline">
     <div class="t-item">
-      <div class="t-time editable" contenteditable="false">6:00 PM</div>
+      <div class="t-time editable" contenteditable="false">8:00 PM</div>
       <div class="t-dot"></div>
       <div class="t-body">
-        <h3 class="editable" contenteditable="false">Cocktails &amp; Hors d'oeuvres</h3>
-        <p class="editable" contenteditable="false">Arrive in your finest for cosmopolitans, champagne, and passed bites while we mingle under the city lights.</p>
-      </div>
-    </div>
-    <div class="t-item">
-      <div class="t-time editable" contenteditable="false">7:00 PM</div>
-      <div class="t-dot"></div>
-      <div class="t-body">
-        <h3 class="editable" contenteditable="false">Dinner with Friends &amp; Family</h3>
-        <p class="editable" contenteditable="false">A seated dinner surrounded by the people who've made the last fifty years unforgettable, with toasts to follow.</p>
+        <h3 class="editable" contenteditable="false">It times to Celebrate</h3>
+        <p class="editable" contenteditable="false">Arrive in your finest couture for cosmopolitans while we mingle under the City Lights.</p>
       </div>
     </div>
     <div class="t-item">
       <div class="t-time editable" contenteditable="false">9:00 PM</div>
       <div class="t-dot"></div>
       <div class="t-body">
-        <h3 class="editable" contenteditable="false">Dancing &amp; Party Games</h3>
-        <p class="editable" contenteditable="false">The night turns up — dancing, a few surprises, and games worthy of the girls' brunch table.</p>
+        <h3 class="editable" contenteditable="false">Cocktail and Cuisine</h3>
+        <p class="editable" contenteditable="false"></p>
+      </div>
+    </div>
+    <div class="t-item">
+      <div class="t-time editable" contenteditable="false">10:00 PM</div>
+      <div class="t-dot"></div>
+      <div class="t-body">
+        <h3 class="editable" contenteditable="false">This is not a sit down affair!!</h3>
+        <p class="editable" contenteditable="false">Dance your heart out to 90's Hip Hop and R&amp;B</p>
       </div>
     </div>
   </div>
@@ -737,8 +771,7 @@
 
 <section class="gallery" id="gallery">
   <div class="section-head">
-    <div class="eyebrow editable" contenteditable="false">Memories</div>
-    <h2 class="editable" contenteditable="false">A Few Favorite Moments</h2>
+    <p class="editable" contenteditable="false">I am celebrating 50 years of confidence, curves, class, and undeniable main-character energy.</p>
   </div>
   <div class="gallery-grid" id="gallery-grid">
     <div class="gallery-tile video-tile filled" data-slot="video" id="video-tile-1" style="aspect-ratio:1080 / 1920;">
@@ -758,15 +791,15 @@
 <section class="location" id="location">
   <div class="section-head">
     <div class="eyebrow editable" contenteditable="false">The Venue</div>
-    <h2 class="editable" contenteditable="false">Where We'll Gather</h2>
+    <h2 class="editable" contenteditable="false">Where We Will Gather</h2>
   </div>
   <div class="loc-grid">
     <div class="loc-card">
       <h3 class="editable" contenteditable="false">Loft on 5th</h3>
       <p class="editable" contenteditable="false">20 W 23rd Street, Ste 5<br>New York, NY 10010</p>
-      <a href="https://www.eventcreate.com/e/keiralinierturnsfifthy#map1" class="cta-gold" style="margin-top:24px; padding:12px 28px; font-size:0.72rem;">Get Directions</a>
+      <a href="https://www.google.com/maps/dir/?api=1&destination=20+W+23rd+St+Ste+5,+New+York,+NY+10010" target="_blank" rel="noopener" class="cta-gold" style="margin-top:24px; padding:12px 28px; font-size:0.72rem;">Get Directions</a>
     </div>
-    <div class="loc-map"><iframe title="Map to Loft on 5th" src="https://www.google.com/maps?q=Loft+on+5th,20+W+23rd+St+Ste+5,New+York,NY+10010&output=embed" style="width:100%; height:100%; border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+    <div class="loc-map"><iframe title="Map to Loft on 5th" src="https://www.google.com/maps?q=20+W+23rd+St+Ste+5,+New+York,+NY+10010&output=embed" style="width:100%; height:100%; border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
   </div>
 </section>
 
@@ -824,6 +857,27 @@
     <p class="admin-note">Scroll anywhere on the page and use the <strong>✎ Edit Page</strong> button (bottom-right) to edit text, photos, and the video. Guests never see this button — it only appears here, after unlocking this page.</p>
     <a href="#rsvp-list" class="cta-gold" style="display:inline-block; margin-top:10px;">View RSVP List →</a>
     <p class="admin-note">This page is only hidden by a password in the page's code — it isn't secure against someone determined to view the source, so don't rely on it for sensitive information.</p>
+
+    <div class="gh-publish-box">
+      <h3 class="gh-publish-title">Publish to GitHub</h3>
+      <p class="admin-note" style="margin-top:0;">Connect this once, and future edits saved from here will be pushed straight to your live site — no manual download/upload needed.</p>
+      <label class="gh-field-label">GitHub username</label>
+      <input type="text" id="gh-owner" class="gh-field" value="jodelaristilde" autocomplete="off">
+      <label class="gh-field-label">Repository name</label>
+      <input type="text" id="gh-repo" class="gh-field" value="50th-bday" autocomplete="off">
+      <label class="gh-field-label">Branch</label>
+      <input type="text" id="gh-branch" class="gh-field" value="main" autocomplete="off">
+      <label class="gh-field-label">File path in the repo</label>
+      <input type="text" id="gh-path" class="gh-field" value="index.html" autocomplete="off">
+      <label class="gh-field-label">Personal Access Token</label>
+      <input type="password" id="gh-token" class="gh-field" placeholder="Paste your GitHub token here" autocomplete="off">
+      <p class="admin-note" style="margin-top:6px;">Don't have a token yet? On GitHub go to <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong>, create one scoped to just this repo with <strong>Contents: Read and write</strong> permission, and paste it above. It's saved only in this browser, never sent to anyone but GitHub.</p>
+      <div class="gh-btn-row">
+        <button type="button" class="cta-gold" onclick="saveGhSettings()">Save Connection</button>
+        <button type="button" class="cta-gold" onclick="pushToGithub()">Push Site to GitHub Now</button>
+      </div>
+      <div class="gh-status" id="gh-publish-status"></div>
+    </div>
   </div>
 </section>
 
@@ -920,6 +974,30 @@
     const current = parseFloat(el.style.fontSize || style.fontSize);
     el.style.fontSize = (current * factor) + 'px';
   }
+  function currentTextColorAsHex(el){
+    const style = window.getComputedStyle(el);
+    const rgb = (el.style.color || style.color).match(/\d+/g);
+    if(!rgb) return '#ffffff';
+    return '#' + rgb.slice(0,3).map(n => (+n).toString(16).padStart(2,'0')).join('');
+  }
+  // A small curated set of fonts already loaded via Google Fonts above,
+  // spanning the site's elegant/script aesthetic plus a couple of clean
+  // sans-serif options for contrast.
+  const FONT_CHOICES = [
+    { label: 'Cormorant Garamond', value: "'Cormorant Garamond', serif" },
+    { label: 'Playfair Display', value: "'Playfair Display', serif" },
+    { label: 'Jost (sans-serif)', value: "'Jost', sans-serif" },
+    { label: 'Montserrat (sans-serif)', value: "'Montserrat', sans-serif" },
+    { label: 'Pinyon Script', value: "'Pinyon Script', cursive" },
+    { label: 'Dancing Script', value: "'Dancing Script', cursive" },
+    { label: 'Great Vibes', value: "'Great Vibes', cursive" }
+  ];
+  function currentFontValue(el){
+    const style = window.getComputedStyle(el);
+    const current = (el.style.fontFamily || style.fontFamily || '').trim();
+    const match = FONT_CHOICES.find(f => current.startsWith(f.value.split(',')[0].replace(/'/g, '')));
+    return match ? match.value : FONT_CHOICES[0].value;
+  }
   function addInlineSizeControls(){
     document.querySelectorAll('.editable').forEach(el => {
       const next = el.nextElementSibling;
@@ -937,9 +1015,39 @@
       upBtn.type = 'button';
       upBtn.textContent = 'A+';
       upBtn.addEventListener('click', () => bumpFontSize(el, 1.12));
+      const colorLabel = document.createElement('span');
+      colorLabel.textContent = 'Color';
+      colorLabel.style.marginLeft = '10px';
+      const colorInput = document.createElement('input');
+      colorInput.type = 'color';
+      colorInput.className = 'inline-color-ctrl';
+      try { colorInput.value = currentTextColorAsHex(el); } catch(e){ colorInput.value = '#ffffff'; }
+      colorInput.addEventListener('input', () => {
+        el.style.color = colorInput.value;
+      });
+      const fontLabel = document.createElement('span');
+      fontLabel.textContent = 'Font';
+      fontLabel.style.marginLeft = '10px';
+      const fontSelect = document.createElement('select');
+      fontSelect.className = 'inline-font-ctrl';
+      FONT_CHOICES.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f.value;
+        opt.textContent = f.label;
+        opt.style.fontFamily = f.value;
+        fontSelect.appendChild(opt);
+      });
+      try { fontSelect.value = currentFontValue(el); } catch(e){ /* leave default */ }
+      fontSelect.addEventListener('change', () => {
+        el.style.fontFamily = fontSelect.value;
+      });
       ctrl.appendChild(label);
       ctrl.appendChild(downBtn);
       ctrl.appendChild(upBtn);
+      ctrl.appendChild(colorLabel);
+      ctrl.appendChild(colorInput);
+      ctrl.appendChild(fontLabel);
+      ctrl.appendChild(fontSelect);
       el.insertAdjacentElement('afterend', ctrl);
     });
   }
@@ -1046,8 +1154,11 @@
     el.style.backgroundSize = zoom + '%';
   }
 
-  // ---------- Save / download the edited page as a new self-contained file ----------
-  function downloadPage(){
+  // ---------- Build a clean, guest-safe copy of the current page HTML ----------
+  // Shared by both "download a file" and "push straight to GitHub", so the
+  // saved page always has the admin/host area re-locked and editing chrome
+  // stripped out, regardless of which save method was used.
+  function buildCleanPageHtml(){
     const clone = document.documentElement.cloneNode(true);
     const controls = clone.querySelector('#edit-controls');
     if(controls) controls.remove();
@@ -1071,6 +1182,10 @@
     if(clonedRsvpPwInput) clonedRsvpPwInput.setAttribute('value', '');
     const clonedRsvpError = clone.querySelector('#rsvp-list-error');
     if(clonedRsvpError) clonedRsvpError.textContent = '';
+    // Never bake a GitHub token into the saved/published file -- it must
+    // only ever live in this browser's localStorage, never in the HTML.
+    const clonedToken = clone.querySelector('#gh-token');
+    if(clonedToken) clonedToken.setAttribute('value', '');
     clone.querySelectorAll('.editable').forEach(el => el.setAttribute('contenteditable', 'false'));
     clone.querySelectorAll('.gallery-tile .upload-btn').forEach(btn => {
       const parentTile = btn.closest('.gallery-tile');
@@ -1078,7 +1193,12 @@
         btn.style.display = 'none';
       }
     });
-    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    return '<!DOCTYPE html>\n' + clone.outerHTML;
+  }
+
+  // ---------- Save / download the edited page as a new self-contained file ----------
+  function downloadPage(){
+    const html = buildCleanPageHtml();
     const blob = new Blob([html], {type: 'text/html'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1089,6 +1209,94 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
+
+  // ---------- Publish straight to GitHub ----------
+  // Uses the GitHub REST "contents" API to commit the current page directly
+  // to your repo, so Save = live. The Personal Access Token is stored only
+  // in this browser's localStorage (never written into the saved HTML, and
+  // never sent anywhere except GitHub's own API).
+  const GH_CONFIG_KEY = 'ghPublishConfig';
+  function loadGhConfig(){
+    try { return JSON.parse(localStorage.getItem(GH_CONFIG_KEY) || 'null'); }
+    catch(e){ return null; }
+  }
+  function ghStatus(msg, isError){
+    const el = document.getElementById('gh-publish-status');
+    if(!el) return;
+    el.textContent = msg;
+    el.classList.toggle('is-error', !!isError);
+  }
+  function fieldVal(id){
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+  function saveGhSettings(){
+    const cfg = {
+      owner: fieldVal('gh-owner'),
+      repo: fieldVal('gh-repo'),
+      branch: fieldVal('gh-branch') || 'main',
+      path: fieldVal('gh-path') || 'index.html',
+      token: fieldVal('gh-token')
+    };
+    if(!cfg.owner || !cfg.repo || !cfg.token){
+      ghStatus('Please fill in your GitHub username, repository name, and token before saving.', true);
+      return;
+    }
+    localStorage.setItem(GH_CONFIG_KEY, JSON.stringify(cfg));
+    ghStatus('Connection saved in this browser. You can now use "Push Site to GitHub Now".');
+  }
+  function prefillGhFields(){
+    const cfg = loadGhConfig();
+    if(!cfg) return;
+    if(document.getElementById('gh-owner') && cfg.owner) document.getElementById('gh-owner').value = cfg.owner;
+    if(document.getElementById('gh-repo') && cfg.repo) document.getElementById('gh-repo').value = cfg.repo;
+    if(document.getElementById('gh-branch') && cfg.branch) document.getElementById('gh-branch').value = cfg.branch;
+    if(document.getElementById('gh-path') && cfg.path) document.getElementById('gh-path').value = cfg.path;
+    if(document.getElementById('gh-token') && cfg.token) document.getElementById('gh-token').value = cfg.token;
+  }
+  function utf8ToBase64(str){
+    return btoa(unescape(encodeURIComponent(str)));
+  }
+  async function pushToGithub(){
+    const cfg = loadGhConfig();
+    if(!cfg || !cfg.owner || !cfg.repo || !cfg.token){
+      ghStatus('Click "Save Connection" first, with your GitHub username, repo, and token filled in.', true);
+      return;
+    }
+    ghStatus('Saving to GitHub…');
+    const apiBase = 'https://api.github.com/repos/' + encodeURIComponent(cfg.owner) + '/' +
+      encodeURIComponent(cfg.repo) + '/contents/' + cfg.path.split('/').map(encodeURIComponent).join('/');
+    const headers = {
+      'Authorization': 'Bearer ' + cfg.token,
+      'Accept': 'application/vnd.github+json'
+    };
+    try {
+      const getResp = await fetch(apiBase + '?ref=' + encodeURIComponent(cfg.branch), { headers });
+      if(!getResp.ok){
+        throw new Error('Could not find that file on GitHub (status ' + getResp.status + '). Double-check the username, repo, branch, and file path above.');
+      }
+      const getData = await getResp.json();
+      const html = buildCleanPageHtml();
+      const putResp = await fetch(apiBase, {
+        method: 'PUT',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+        body: JSON.stringify({
+          message: 'Update site from Host Login (' + new Date().toLocaleString() + ')',
+          content: utf8ToBase64(html),
+          sha: getData.sha,
+          branch: cfg.branch
+        })
+      });
+      if(!putResp.ok){
+        const errBody = await putResp.json().catch(() => ({}));
+        throw new Error(errBody.message || ('GitHub rejected the save (status ' + putResp.status + '). Check that your token has write access to this repo.'));
+      }
+      ghStatus('Saved! Your live site will update in a minute or two.');
+    } catch(err){
+      ghStatus(err.message || 'Something went wrong saving to GitHub.', true);
+    }
+  }
+  prefillGhFields();
 
   // =====================================================================
   // RSVP is powered by a connected Jotform form (embedded above as an
