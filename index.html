@@ -898,12 +898,14 @@
       <div class="admin-toolbar">
         <div class="admin-count" id="admin-rsvp-count">6 RSVPs — 6 total guests</div>
         <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="rsvp-save-btn" onclick="saveRsvpDeletions()">💾 Save List</button>
           <button type="button" class="rsvp-export-btn" onclick="exportRsvpToExcel()">⤓ Export to Excel</button>
           <button type="button" class="rsvp-save-btn" onclick="downloadPage()">⬇ Save Page (with deletions)</button>
           <a href="https://www.jotform.com/myforms" target="_blank" rel="noopener">Open in Jotform →</a>
         </div>
       </div>
-      <p class="rsvp-list-note" style="margin-top:0; margin-bottom:14px;">The ✕ button below removes a row from this snapshot view only. To permanently delete a submission, remove it in Jotform (link above) — that's the real guest list.</p>
+      <div class="rsvp-save-status" id="rsvp-save-status" style="min-height:1.2em; margin-bottom:10px;"></div>
+      <p class="rsvp-list-note" style="margin-top:0; margin-bottom:14px;">The ✕ button below removes a row from view. Click <strong>Save List</strong> to keep it removed after a refresh (remembered in this browser only). To permanently delete a submission everywhere, remove it in Jotform (link above) — that's the real guest list.</p>
       <div class="rsvp-table-wrap">
         <table class="rsvp-table" id="admin-rsvp-table">
           <thead><tr><th>Date</th><th>First</th><th>Last</th><th>Phone</th><th>Plus One</th><th></th></tr></thead>
@@ -1346,14 +1348,18 @@
   // anything in Jotform. Real deletion has to happen in Jotform itself,
   // since giving a guest-facing static file the power to delete real data
   // would be unsafe.
-  // Deletions are remembered in this browser's localStorage so a removed
-  // row stays hidden after a refresh -- without this, reloading would just
-  // re-show the original static snapshot baked into the page.
+  // Clicking the X removes a row from view right away but only marks it
+  // PENDING -- it is not remembered yet. Clicking "Save List" is what
+  // actually commits the pending removals to this browser's localStorage,
+  // so they stay gone after a refresh. This two-step flow (rather than
+  // saving automatically on every click) means the host always gets a
+  // clear, visible confirmation that a save happened.
   // Rows are tracked by their fixed position in the table (assigned once,
   // below), not by their text content -- some guest rows are identical
   // duplicates (same name/phone), and a content-based key would hide every
   // duplicate the moment just one of them was deleted.
   const RSVP_DELETED_KEY = 'deletedRsvpRows';
+  let pendingRsvpDeletions = new Set();
   function assignRsvpRowPositions(){
     document.querySelectorAll('#admin-rsvp-table-body tr').forEach((row, i) => {
       if(!row.dataset.rsvpPos) row.dataset.rsvpPos = String(i);
@@ -1364,8 +1370,10 @@
     catch(e){ return new Set(); }
   }
   function saveDeletedRsvpPositions(positions){
-    try { localStorage.setItem(RSVP_DELETED_KEY, JSON.stringify(Array.from(positions))); }
-    catch(e){ /* localStorage unavailable -- deletion just won't persist */ }
+    try {
+      localStorage.setItem(RSVP_DELETED_KEY, JSON.stringify(Array.from(positions)));
+      return true;
+    } catch(e){ return false; }
   }
   function applyDeletedRsvpRows(){
     assignRsvpRowPositions();
@@ -1376,16 +1384,36 @@
     });
     updateRsvpCount();
   }
+  function rsvpStatus(msg, isError){
+    const el = document.getElementById('rsvp-save-status');
+    if(!el) return;
+    el.textContent = msg;
+    el.style.color = isError ? '#ff9d9d' : 'var(--gold-soft)';
+  }
   function removeRsvpRow(btn){
     const row = btn.closest('tr');
     if(!row) return;
     if(!confirm('Remove this entry from the list view? (This does not delete it from Jotform.)')) return;
     assignRsvpRowPositions();
-    const deleted = loadDeletedRsvpPositions();
-    deleted.add(row.dataset.rsvpPos);
-    saveDeletedRsvpPositions(deleted);
+    pendingRsvpDeletions.add(row.dataset.rsvpPos);
     row.remove();
     updateRsvpCount();
+    rsvpStatus('Removed — click "Save List" to keep this after a refresh.');
+  }
+  function saveRsvpDeletions(){
+    if(pendingRsvpDeletions.size === 0){
+      rsvpStatus('Nothing new to save — remove a guest first, or the list is already saved.');
+      return;
+    }
+    const deleted = loadDeletedRsvpPositions();
+    pendingRsvpDeletions.forEach(pos => deleted.add(pos));
+    const ok = saveDeletedRsvpPositions(deleted);
+    if(ok){
+      rsvpStatus('✓ Saved — removed guests will stay off the list after a refresh, in this browser.');
+      pendingRsvpDeletions = new Set();
+    } else {
+      rsvpStatus('Could not save in this browser (private/incognito mode or storage disabled). Use "Save Page (with deletions)" and re-upload instead.', true);
+    }
   }
   function updateRsvpCount(){
     const rows = document.querySelectorAll('#admin-rsvp-table-body tr').length;
