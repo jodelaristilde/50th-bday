@@ -1171,7 +1171,14 @@
     const controls = clone.querySelector('#edit-controls');
     if(controls) controls.remove();
     clone.querySelectorAll('.inline-size-ctrl').forEach(el => el.remove());
-    clone.classList.remove('edit-mode');
+    // IMPORTANT: edit-mode is a class on <body>, not <html> -- clone is the
+    // <html> element (document.documentElement), so this must reach into
+    // the cloned body specifically. Getting this wrong previously left
+    // "edit-mode" baked into saved/published files, which made photo-edit
+    // controls (Change Photo, position arrows, zoom) visible to every
+    // guest, not just the host.
+    const clonedBody = clone.querySelector('body');
+    if(clonedBody) clonedBody.classList.remove('edit-mode');
     // Always save with the admin/host area locked, even if it's unlocked
     // in the current editing session -- guests who open the saved file
     // should never inherit an already-unlocked admin panel.
