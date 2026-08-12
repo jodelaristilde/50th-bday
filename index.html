@@ -896,36 +896,31 @@
 
     <div class="admin-panel" id="rsvp-list-panel">
       <div class="admin-toolbar">
-        <div class="admin-count" id="admin-rsvp-count">Loading…</div>
+        <div class="admin-count" id="admin-rsvp-count">Your live guest list is on Jotform</div>
         <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
-          <button type="button" class="rsvp-export-btn" onclick="exportRsvpToExcel()">⤓ Export to Excel</button>
-          <button type="button" class="rsvp-save-btn" onclick="downloadPage()">⬇ Save Page (with deletions)</button>
           <a href="https://www.jotform.com/myforms" target="_blank" rel="noopener">Open in Jotform →</a>
         </div>
       </div>
 
       <div class="gh-publish-box" style="margin-top:0; border-top:none; padding-top:0;">
-        <h3 class="gh-publish-title" style="margin-top:0;">Live from Jotform</h3>
-        <p class="admin-note" style="margin-top:0;">Connect this once, and the list below will refresh automatically every time this page is opened — no need to ask Claude to update it.</p>
-        <label class="gh-field-label">Jotform API Key</label>
-        <input type="password" id="jf-api-key" class="gh-field" placeholder="Paste your Jotform API key here" autocomplete="off">
-        <p class="admin-note" style="margin-top:6px;">Get this from Jotform → click your avatar → <strong>Settings → API</strong> → create a key. It's saved only in this browser, never sent to anyone but Jotform.</p>
-        <div class="gh-btn-row">
-          <button type="button" class="cta-gold" onclick="saveJfSettings()">Save Connection</button>
-          <button type="button" class="cta-gold" onclick="refreshRsvpFromJotform()">Refresh List Now</button>
+        <h3 class="gh-publish-title" style="margin-top:0;">Your Guest List</h3>
+        <p class="admin-note" style="margin-top:0;">The real, always-current guest list lives on Jotform itself — no key or password needed here, just a bookmark. Anyone with this link can see who's RSVP'd, in real time, the moment they open it.</p>
+        <div class="rsvp-jf-link-box" id="rsvp-jf-link-display" style="display:none;">
+          <a id="rsvp-jf-link-anchor" href="#" target="_blank" rel="noopener" class="cta-gold" style="display:inline-block; padding:12px 28px; font-size:0.75rem;">Open Live Guest List →</a>
+          <button type="button" class="rsvp-export-btn" style="margin-left:12px;" onclick="editJfLink()">Change link</button>
         </div>
-        <div class="gh-status" id="jf-status"></div>
+        <div id="rsvp-jf-link-setup">
+          <label class="gh-field-label">Paste your Jotform guest list link here (one-time setup)</label>
+          <input type="text" id="jf-share-link" class="gh-field" placeholder="https://www.jotform.com/...">
+          <div class="gh-btn-row">
+            <button type="button" class="cta-gold" onclick="saveJfLink()">Save Link</button>
+          </div>
+          <div class="gh-status" id="jf-status"></div>
+          <p class="admin-note" style="margin-top:14px;">Don't have this link yet? In Jotform, open your RSVP form, click the <strong>Submissions</strong> tab, then look for a <strong>Share</strong> icon near the top of the table (it may look like an arrow pointing out of a box). Choose to share as a public/view-only link, copy it, and paste it above.</p>
+        </div>
       </div>
 
-      <p class="rsvp-list-note" style="margin-top:0; margin-bottom:14px;">The ✕ button below removes a row from this view only (until the next refresh). To permanently delete a submission, remove it in Jotform (link above) — that's the real guest list.</p>
-      <div class="rsvp-table-wrap">
-        <table class="rsvp-table" id="admin-rsvp-table">
-          <thead id="admin-rsvp-thead"><tr><th>Date</th><th>First</th><th>Last</th><th>Phone</th><th>Plus One</th><th></th></tr></thead>
-          <tbody id="admin-rsvp-table-body">
-          </tbody>
-        </table>
-      </div>
-      <p class="rsvp-list-note">Connect your Jotform API key above for a live, always-current list. Without it, this stays empty — it never shows fake or placeholder entries.</p>
+      <p class="rsvp-list-note" style="margin-top:20px; margin-bottom:14px;">Staff and your boss can bookmark the "Open Live Guest List" link above directly — no login to this site required, and it always shows the true, current list straight from Jotform.</p>
     </div>
   </div>
 </section>
@@ -965,15 +960,47 @@
     document.documentElement.style.fontSize = rootTextScale + '%';
   }
 
+  // ---------- Shared: shrink an uploaded image before it's embedded ----------
+  // Raw phone photos can be 3-10MB each. Embedded directly, a handful of
+  // them balloons the saved file to tens of MB, which silently breaks the
+  // "Push to GitHub" auto-save (GitHub's simple save API only accepts files
+  // under ~1MB) and makes the live site painfully slow to load for guests.
+  // Resizing to a sane max dimension and re-compressing as JPEG typically
+  // shrinks a phone photo from several MB down to a couple hundred KB,
+  // with no visible quality loss at the sizes this site displays photos.
+  function compressImageFile(file, maxDim, quality){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.naturalWidth, h = img.naturalHeight;
+          if(w > maxDim || h > maxDim){
+            if(w >= h){ h = Math.round(h * (maxDim / w)); w = maxDim; }
+            else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = () => reject(new Error('Could not read that image file.'));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('Could not read that image file.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
   // ---------- Hero photo upload ----------
   function handleHeroPhoto(evt){
     const file = evt.target.files[0];
     if(!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      document.getElementById('hero-photo').style.backgroundImage = "url('" + e.target.result + "')";
-    };
-    reader.readAsDataURL(file);
+    compressImageFile(file, 1800, 0.82).then(dataUrl => {
+      document.getElementById('hero-photo').style.backgroundImage = "url('" + dataUrl + "')";
+    }).catch(err => alert(err.message || 'Could not load that photo.'));
   }
 
   // ---------- Per-field text size controls (always visible in edit mode) ----------
@@ -1077,7 +1104,22 @@
     const file = evt.target.files[0];
     const tile = activeVideoTile;
     if(!file || !tile) return;
-    videoStatus(tile, 'Loading "' + file.name + '" (' + (file.size/1024/1024).toFixed(1) + 'MB)…');
+    // Video embedded directly in the page's saved code is the single
+    // biggest cause of "Push to GitHub" silently failing (GitHub's
+    // auto-save API only accepts files under ~1MB) and of slow page
+    // loads for guests. There's no good way to shrink video client-side
+    // the way we do for photos, so instead of letting a large video
+    // quietly break saving again, we refuse it outright with a clear
+    // explanation, rather than embedding it and having it fail later
+    // with no obvious cause.
+    const MAX_VIDEO_MB = 8;
+    const sizeMB = file.size / 1024 / 1024;
+    if(sizeMB > MAX_VIDEO_MB){
+      videoStatus(tile, 'This video is ' + sizeMB.toFixed(1) + 'MB — too large to save safely (limit ' + MAX_VIDEO_MB + 'MB). Trim it shorter, compress it (e.g. with a free tool like Handbrake), or host it elsewhere (YouTube unlisted, Google Drive, etc.) and ask your site assistant to embed that link instead.', true);
+      videoInput.value = '';
+      return;
+    }
+    videoStatus(tile, 'Loading "' + file.name + '" (' + sizeMB.toFixed(1) + 'MB)…');
     const reader = new FileReader();
     reader.onload = e => {
       const vid = tile.querySelector('video');
@@ -1131,11 +1173,9 @@
   function handleAboutPhoto(evt){
     const file = evt.target.files[0];
     if(!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      document.getElementById('about-photo').style.backgroundImage = "url('" + e.target.result + "')";
-    };
-    reader.readAsDataURL(file);
+    compressImageFile(file, 1800, 0.82).then(dataUrl => {
+      document.getElementById('about-photo').style.backgroundImage = "url('" + dataUrl + "')";
+    }).catch(err => alert(err.message || 'Could not load that photo.'));
   }
 
   // ---------- Photo position & zoom adjustment ----------
@@ -1197,12 +1237,10 @@
     if(clonedRsvpPwInput) clonedRsvpPwInput.setAttribute('value', '');
     const clonedRsvpError = clone.querySelector('#rsvp-list-error');
     if(clonedRsvpError) clonedRsvpError.textContent = '';
-    // Never bake a GitHub token or Jotform API key into the saved/published
-    // file -- they must only ever live in this browser's localStorage.
+    // Never bake a GitHub token into the saved/published file -- it must
+    // only ever live in this browser's localStorage, never in the HTML.
     const clonedToken = clone.querySelector('#gh-token');
     if(clonedToken) clonedToken.setAttribute('value', '');
-    const clonedJfKey = clone.querySelector('#jf-api-key');
-    if(clonedJfKey) clonedJfKey.setAttribute('value', '');
     clone.querySelectorAll('.editable').forEach(el => el.setAttribute('contenteditable', 'false'));
     clone.querySelectorAll('.gallery-tile .upload-btn').forEach(btn => {
       const parentTile = btn.closest('.gallery-tile');
@@ -1334,18 +1372,16 @@
     // Simple password gate for the Host Login page. This only hides the
     // page from casual visitors -- it is NOT real security, since anyone
     // can view the page's source code and read this value.
-    ADMIN_PASSWORD: "keira50",
-    JOTFORM_FORM_ID: "262212368026047"
+    ADMIN_PASSWORD: "keira50"
   };
 
-  // ---------- Live guest list, pulled straight from Jotform ----------
-  // The Jotform API key is stored only in this browser's local storage
-  // (same approach as the GitHub token above) -- never written into the
-  // saved/published HTML, and only ever sent to Jotform's own API.
-  const JF_CONFIG_KEY = 'jfListConfig';
-  function loadJfConfig(){
-    try { return JSON.parse(localStorage.getItem(JF_CONFIG_KEY) || 'null'); }
-    catch(e){ return null; }
+  // ---------- Guest list: just a saved link, nothing to type or paste on refresh ----------
+  // No API key, no token, no fetch calls that can fail. The host pastes
+  // Jotform's own shareable "Submissions" link once; after that it's just
+  // a bookmark that always shows Jotform's real, live guest list.
+  const JF_LINK_KEY = 'jfShareLink';
+  function loadJfLink(){
+    return localStorage.getItem(JF_LINK_KEY) || '';
   }
   function jfStatus(msg, isError){
     const el = document.getElementById('jf-status');
@@ -1353,107 +1389,42 @@
     el.textContent = msg;
     el.classList.toggle('is-error', !!isError);
   }
-  function saveJfSettings(){
-    const keyEl = document.getElementById('jf-api-key');
-    const apiKey = keyEl ? keyEl.value.trim() : '';
-    if(!apiKey){
-      jfStatus('Paste your Jotform API key above before saving.', true);
+  function saveJfLink(){
+    const input = document.getElementById('jf-share-link');
+    const link = input ? input.value.trim() : '';
+    if(!link || !/^https?:\/\//i.test(link)){
+      jfStatus('Paste a valid link (starting with https://) before saving.', true);
       return;
     }
-    localStorage.setItem(JF_CONFIG_KEY, JSON.stringify({ apiKey }));
-    jfStatus('Connection saved in this browser. Refreshing your list now…');
-    refreshRsvpFromJotform();
+    localStorage.setItem(JF_LINK_KEY, link);
+    jfStatus('Saved! Your live guest list link is ready below.');
+    showJfLink();
   }
-  function prefillJfField(){
-    const cfg = loadJfConfig();
-    if(cfg && cfg.apiKey && document.getElementById('jf-api-key')){
-      document.getElementById('jf-api-key').value = cfg.apiKey;
-    }
+  function editJfLink(){
+    document.getElementById('rsvp-jf-link-display').style.display = 'none';
+    document.getElementById('rsvp-jf-link-setup').style.display = '';
+    const input = document.getElementById('jf-share-link');
+    if(input) input.value = loadJfLink();
   }
-  // Pull every answer value out of a Jotform submission's "answers" object
-  // regardless of its shape (plain text, {first,last} name fields, phone
-  // objects, checkbox arrays, etc.) and return one flat display string.
-  function jfAnswerText(ans){
-    if(!ans || ans.answer == null) return '';
-    const a = ans.answer;
-    if(typeof a === 'string' || typeof a === 'number') return String(a);
-    if(Array.isArray(a)) return a.filter(Boolean).join(', ');
-    if(typeof a === 'object') {
-      return Object.values(a).filter(v => v && typeof v !== 'object').join(' ');
-    }
-    return '';
-  }
-  // Figure out the guest-list columns from whatever questions actually
-  // exist on this specific Jotform form, instead of assuming fixed fields
-  // -- every host's form is a little different.
-  function jfBuildColumns(submissions){
-    const cols = new Map();
-    submissions.forEach(sub => {
-      const answers = sub.answers || {};
-      Object.keys(answers).forEach(qid => {
-        const ans = answers[qid];
-        if(!ans || !ans.text) return;
-        const skipTypes = ['control_button', 'control_head', 'control_pagebreak', 'control_divider'];
-        if(skipTypes.includes(ans.type)) return;
-        if(!cols.has(qid)) cols.set(qid, { label: ans.text, order: parseInt(ans.order || '0', 10) });
-      });
-    });
-    return Array.from(cols.entries())
-      .sort((a, b) => a[1].order - b[1].order)
-      .map(([qid, meta]) => ({ qid, label: meta.label }));
-  }
-  function jfFormatDate(iso){
-    if(!iso) return '';
-    const d = new Date(iso.replace(' ', 'T'));
-    if(isNaN(d.getTime())) return iso;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-  function renderRsvpTable(submissions){
-    const thead = document.getElementById('admin-rsvp-thead');
-    const tbody = document.getElementById('admin-rsvp-table-body');
+  function showJfLink(){
+    const link = loadJfLink();
+    const displayBox = document.getElementById('rsvp-jf-link-display');
+    const setupBox = document.getElementById('rsvp-jf-link-setup');
+    const anchor = document.getElementById('rsvp-jf-link-anchor');
     const countEl = document.getElementById('admin-rsvp-count');
-    if(!thead || !tbody) return;
-    const columns = jfBuildColumns(submissions);
-    thead.innerHTML = '<tr><th>Date</th>' + columns.map(c => '<th>' + c.label.replace(/</g, '&lt;') + '</th>').join('') + '<th></th></tr>';
-    const sorted = submissions.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    tbody.innerHTML = sorted.map(sub => {
-      const dateCell = '<td>' + jfFormatDate(sub.created_at) + '</td>';
-      const answerCells = columns.map(c => '<td>' + (jfAnswerText((sub.answers || {})[c.qid]).replace(/</g, '&lt;') || '—') + '</td>').join('');
-      return '<tr>' + dateCell + answerCells + '<td><button type="button" class="rsvp-row-delete" onclick="removeRsvpRow(this)" title="Remove from this view">✕</button></td></tr>';
-    }).join('');
-    if(countEl) countEl.textContent = sorted.length + ' RSVP' + (sorted.length === 1 ? '' : 's') + ' — live from Jotform';
-  }
-  async function refreshRsvpFromJotform(){
-    const cfg = loadJfConfig();
-    if(!cfg || !cfg.apiKey){
-      jfStatus('Click "Save Connection" first, with your Jotform API key filled in.', true);
-      return;
-    }
-    jfStatus('Refreshing…');
-    const url = 'https://api.jotform.com/form/' + encodeURIComponent(RSVP_CONFIG.JOTFORM_FORM_ID) +
-      '/submissions?apiKey=' + encodeURIComponent(cfg.apiKey) + '&limit=1000&orderby=created_at';
-    try {
-      const resp = await fetch(url);
-      if(!resp.ok){
-        if(resp.status === 401 || resp.status === 403){
-          throw new Error('Jotform rejected your API key (status ' + resp.status + '). Double-check it was copied fully and hasn\'t been revoked.');
-        }
-        throw new Error('Could not reach Jotform (status ' + resp.status + ').');
-      }
-      const data = await resp.json();
-      if(data.responseCode && data.responseCode !== 200){
-        throw new Error(data.message || 'Jotform returned an error.');
-      }
-      const submissions = data.content || [];
-      renderRsvpTable(submissions);
-      jfStatus('Updated just now. This list refreshes automatically each time you open this page.');
-    } catch(err){
-      jfStatus(err.message || 'Something went wrong reaching Jotform.', true);
-      const countEl = document.getElementById('admin-rsvp-count');
-      if(countEl) countEl.textContent = 'Could not load live list — see message below';
+    if(!displayBox || !setupBox) return;
+    if(link){
+      if(anchor) anchor.href = link;
+      displayBox.style.display = '';
+      setupBox.style.display = 'none';
+      if(countEl) countEl.textContent = 'Your live guest list link is ready';
+    } else {
+      displayBox.style.display = 'none';
+      setupBox.style.display = '';
+      if(countEl) countEl.textContent = 'Set up your guest list link below';
     }
   }
-  prefillJfField();
+  showJfLink();
 
   // ---------- Only reveal host-only sections when directly linked to ----------
   // #admin and #rsvp-list are display:none by default so guests scrolling
@@ -1475,38 +1446,6 @@
   revealHostSectionFromHash();
   window.addEventListener('hashchange', revealHostSectionFromHash);
 
-  // ---------- RSVP List: remove a row from this snapshot view ----------
-  // This only affects what's displayed on this page -- it does NOT delete
-  // anything in Jotform. Real deletion has to happen in Jotform itself,
-  // since giving a guest-facing static file the power to delete real data
-  // would be unsafe.
-  function removeRsvpRow(btn){
-    const row = btn.closest('tr');
-    if(!row) return;
-    if(!confirm('Remove this entry from the list view? (This does not delete it from Jotform.)')) return;
-    row.remove();
-    updateRsvpCount();
-  }
-  function updateRsvpCount(){
-    const rows = document.querySelectorAll('#admin-rsvp-table-body tr').length;
-    const countEl = document.getElementById('admin-rsvp-count');
-    if(countEl) countEl.textContent = rows + ' RSVP' + (rows === 1 ? '' : 's') + ' shown';
-  }
-
-  // ---------- RSVP List: export the visible table to an Excel file ----------
-  function exportRsvpToExcel(){
-    const table = document.getElementById('admin-rsvp-table');
-    if(!table || typeof XLSX === 'undefined') return;
-    // Export a clone with the "remove row" button column stripped out,
-    // so the spreadsheet only contains real guest data.
-    const clone = table.cloneNode(true);
-    clone.querySelectorAll('tr').forEach(row => {
-      const lastCell = row.lastElementChild;
-      if(lastCell) lastCell.remove();
-    });
-    const wb = XLSX.utils.table_to_book(clone, {sheet: 'RSVPs'});
-    XLSX.writeFile(wb, 'keira-50th-rsvp-list.xlsx');
-  }
 
   // ---------- Host admin: password gate ----------
   // Unlocking either the Site Editor or RSVP List page unlocks both, for
@@ -1521,15 +1460,9 @@
     // Unlock the site editor for this session only after the host
     // authenticates -- guests never see the Edit Page button.
     document.getElementById('edit-controls').style.display = '';
-    // If a Jotform connection is already saved in this browser, refresh
-    // the guest list automatically -- so opening this page always shows
-    // the current list without anyone having to click a button.
-    if(loadJfConfig()){
-      refreshRsvpFromJotform();
-    } else {
-      const countEl = document.getElementById('admin-rsvp-count');
-      if(countEl) countEl.textContent = 'Connect Jotform below to see your guest list';
-    }
+    // Show the saved guest-list link (if any) every time Host Login is
+    // opened -- nothing to fetch, nothing that can fail or time out.
+    showJfLink();
   }
   function checkPasswordField(inputId, errorId){
     const input = document.getElementById(inputId);
